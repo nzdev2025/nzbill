@@ -1,0 +1,206 @@
+/* ==========================================
+   Bill Card Component Styles
+   ========================================== */
+
+.bill-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: var(--spacing-sm);
+    border-left: 4px solid var(--color-primary);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.bill-card:active {
+    transform: scale(0.98);
+}
+
+/* State variants */
+.bill-card--paid {
+    border-left-color: var(--color-success);
+    opacity: 0.7;
+}
+
+.bill-card--paid .bill-card__name {
+    text-decoration: line-through;
+    color: var(--color-gray-500);
+}
+
+.bill-card--overdue {
+    border-left-color: var(--color-danger);
+    background: linear-gradient(90deg, rgba(231, 76, 60, 0.05) 0%, var(--color-white) 100%);
+}
+
+.bill-card--urgent {
+    border-left-color: var(--color-warning);
+    background: linear-gradient(90deg, rgba(243, 156, 18, 0.05) 0%, var(--color-white) 100%);
+}
+
+/* Icon */
+.bill-card__icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.bill-card--paid .bill-card__icon {
+    background: var(--color-gray-100);
+}
+
+/* Info section */
+.bill-card__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.bill-card__name {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-gray-800);
+    margin: 0 0 2px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bill-card__category {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-500);
+    margin: 0 0 4px 0;
+}
+
+.bill-card__date {
+    font-size: var(--font-size-xs);
+    color: var(--color-gray-600);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.bill-card__date-label {
+    color: var(--color-gray-400);
+}
+
+.bill-card__date-value {
+    font-weight: var(--font-weight-medium);
+}
+
+.bill-card__status {
+    font-weight: var(--font-weight-medium);
+}
+
+.bill-card__status.warning {
+    color: var(--color-warning);
+}
+
+.bill-card__status.danger {
+    color: var(--color-danger);
+}
+
+/* Amount section */
+.bill-card__amount-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+}
+
+.bill-card__amount {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    white-space: nowrap;
+}
+
+.bill-card--paid .bill-card__amount {
+    color: var(--color-gray-400);
+}
+
+.bill-card--overdue .bill-card__amount {
+    color: var(--color-danger);
+}
+
+.bill-card__notify-btn {
+    background: var(--color-primary-bg);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 4px 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+}
+
+.bill-card__notify-btn:active {
+    transform: scale(0.9);
+}
+
+/* Actions overlay */
+.bill-card__actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background: var(--color-gray-100);
+    padding: var(--spacing-xs);
+    gap: var(--spacing-xs);
+    animation: slide-up 0.2s ease-out;
+}
+
+@keyframes slide-up {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.bill-card__action {
+    flex: 1;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.bill-card__action--pay {
+    background: var(--color-success);
+    color: var(--color-white);
+}
+
+.bill-card__action--edit {
+    background: var(--color-primary);
+    color: var(--color-white);
+}
+
+.bill-card__action--delete {
+    background: var(--color-danger);
+    color: var(--color-white);
+}
+
+.bill-card__action:active {
+    transform: scale(0.95);
+}

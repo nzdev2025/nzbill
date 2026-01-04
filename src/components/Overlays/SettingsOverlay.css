@@ -1,0 +1,14 @@
+.settings-btn--danger {
+    background-color: #e53e3e !important;
+    /* Force red */
+    color: white;
+    margin-top: 1rem;
+    width: 100%;
+    justify-content: center;
+}
+
+.settings-btn--danger:hover {
+    background-color: #c53030 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+}

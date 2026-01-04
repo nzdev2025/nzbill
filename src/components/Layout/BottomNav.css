@@ -1,0 +1,113 @@
+/* ==========================================
+   Bottom Navigation - Game Style (Exact ref)
+   ========================================== */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, #FFF9F5 0%, #FFF5EE 100%);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(139, 90, 60, 0.25);
+    z-index: 100;
+    border: 2px solid rgba(184, 134, 100, 0.2);
+}
+
+/* Nav Item - Clean style */
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.nav-item:active {
+    transform: scale(0.95);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Icon Container */
+.nav-item .nav-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-item .nav-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* Label */
+.nav-item .nav-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #8B7355;
+    white-space: nowrap;
+}
+
+/* ============ Individual Icon Colors ============ */
+
+/* Home - Orange/Salmon */
+.nav-item[aria-label="หน้าหลัก"] .nav-icon svg {
+    stroke: #E67B5B;
+    fill: rgba(230, 123, 91, 0.15);
+}
+
+/* Bill List - Purple/Indigo (label: บิล) */
+.nav-item[aria-label="บิล"] .nav-icon svg {
+    stroke: #7B5BE6;
+    fill: rgba(123, 91, 230, 0.15);
+}
+
+/* Bills - Red/Maroon (Book, label: สมุด) */
+.nav-item[aria-label="สมุด"] .nav-icon svg {
+    stroke: #C45C5C;
+    fill: rgba(196, 92, 92, 0.15);
+}
+
+/* Analytics - Green/Teal (Chart, label: สถิติ) */
+.nav-item[aria-label="สถิติ"] .nav-icon svg {
+    stroke: #2ECC71;
+    fill: rgba(46, 204, 113, 0.15);
+}
+
+/* Settings - Gray (Gear) */
+.nav-item[aria-label="ตั้งค่า"] .nav-icon svg {
+    stroke: #8B8B8B;
+    fill: rgba(139, 139, 139, 0.1);
+}
+
+/* Active State - Subtle highlight */
+.nav-item.active {
+    background: rgba(230, 123, 91, 0.1);
+}
+
+.nav-item.active .nav-label {
+    color: #C45A3C;
+}
+
+/* Hover effects for desktop */
+@media (hover: hover) {
+    .nav-item:hover {
+        background: rgba(0, 0, 0, 0.03);
+    }
+}

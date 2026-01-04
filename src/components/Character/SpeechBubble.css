@@ -1,0 +1,212 @@
+/* ==========================================
+   Speech Bubble Component Styles
+   ========================================== */
+
+.speech-bubble {
+    position: relative;
+    background: var(--color-white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin: var(--spacing-md);
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    max-width: 95%;
+    animation: bubble-appear 0.3s ease-out;
+}
+
+.speech-bubble:active {
+    transform: scale(0.98);
+}
+
+/* Triangle pointer */
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 14px solid var(--color-white);
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.05));
+}
+
+/* Header with speaker name and notification button */
+.speech-bubble__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+    gap: var(--spacing-sm);
+}
+
+/* Speaker name tag */
+.speech-bubble__speaker {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    color: var(--color-white);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Notification button */
+.speech-bubble__notify-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.speech-bubble__notify-btn:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.speech-bubble__notify-btn:active {
+    transform: scale(0.95);
+}
+
+.speech-bubble__notify-icon {
+    font-size: 0.875rem;
+    animation: bell-swing 2s ease-in-out infinite;
+}
+
+/* Dialog text */
+.speech-bubble__text {
+    font-size: var(--font-size-base);
+    line-height: 1.7;
+    color: var(--color-gray-700);
+    margin: 0;
+    min-height: 1.5em;
+    word-wrap: break-word;
+}
+
+/* Typing cursor */
+.speech-bubble__cursor {
+    display: inline-block;
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+    animation: cursor-blink 0.6s step-end infinite;
+    margin-left: 2px;
+}
+
+/* Click indicator */
+.speech-bubble__indicator {
+    position: absolute;
+    bottom: var(--spacing-sm);
+    right: var(--spacing-md);
+    opacity: 0.5;
+}
+
+.speech-bubble__arrow {
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+    animation: bounce-arrow 1s ease-in-out infinite;
+}
+
+/* Keyframes */
+@keyframes bubble-appear {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes cursor-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes bounce-arrow {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(3px);
+    }
+}
+
+@keyframes bell-swing {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    10% {
+        transform: rotate(15deg);
+    }
+
+    20% {
+        transform: rotate(-10deg);
+    }
+
+    30% {
+        transform: rotate(5deg);
+    }
+
+    40% {
+        transform: rotate(0deg);
+    }
+}
+
+/* Bill reminder variant */
+.speech-bubble--bill {
+    border-left: 4px solid var(--color-primary);
+}
+
+.speech-bubble--warning {
+    border-left: 4px solid var(--color-warning);
+}
+
+.speech-bubble--danger {
+    border-left: 4px solid var(--color-danger);
+}
+
+.speech-bubble--success {
+    border-left: 4px solid var(--color-success);
+}
+
+/* Multiple bubbles */
+.speech-bubble+.speech-bubble {
+    margin-top: var(--spacing-sm);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .speech-bubble,
+    .speech-bubble__cursor,
+    .speech-bubble__arrow,
+    .speech-bubble__notify-icon {
+        animation: none;
+    }
+}

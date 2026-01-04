@@ -1,0 +1,217 @@
+/* ==========================================
+   Character Component Styles
+   ========================================== */
+
+.character {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+
+    /* Breathing animation */
+    animation: character-breathe 4s ease-in-out infinite;
+}
+
+.character:active {
+    transform: scale(0.98);
+}
+
+/* Size variants */
+.character--small {
+    height: 150px;
+}
+
+.character--small .character__sprite {
+    max-height: 150px;
+}
+
+.character--medium {
+    height: 300px;
+}
+
+.character--medium .character__sprite {
+    max-height: 300px;
+}
+
+.character--large {
+    height: 100%;
+    max-height: none;
+}
+
+.character--large .character__sprite {
+    max-height: none;
+    height: 100%;
+}
+
+/* Sprite wrapper */
+.character__sprite-wrapper {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+/* Sprite image */
+.character__sprite {
+    width: auto;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.15));
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+/* Animations */
+.character--animating .character__sprite {
+    opacity: 0.8;
+    transform: scale(0.98);
+}
+
+.character--talking {
+    animation: character-talk 0.15s ease-in-out infinite;
+}
+
+.character--blinking .character__sprite {
+    /* Slight squish effect for blink */
+}
+
+/* Blink overlay - creates eye closing effect */
+.character__blink-overlay {
+    position: absolute;
+    top: 15%;
+    left: 35%;
+    width: 30%;
+    height: 5%;
+    background: linear-gradient(180deg,
+            transparent 0%,
+            rgba(255, 220, 200, 0.8) 50%,
+            transparent 100%);
+    pointer-events: none;
+    animation: blink-effect 0.15s ease-in-out;
+}
+
+/* Keyframes */
+@keyframes character-breathe {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+@keyframes character-talk {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+@keyframes blink-effect {
+
+    0%,
+    100% {
+        opacity: 0;
+        transform: scaleY(0);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+/* Hover effects */
+.character:hover .character__sprite {
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.2));
+}
+
+/* Expression-specific animations */
+.character--happy {
+    animation: character-bounce 0.6s ease-in-out;
+}
+
+.character--worried {
+    animation: character-shake 0.3s ease-in-out infinite;
+}
+
+.character--excited {
+    animation: character-bounce 0.4s ease-in-out infinite;
+}
+
+@keyframes character-bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    25% {
+        transform: translateY(-10px);
+    }
+
+    50% {
+        transform: translateY(0);
+    }
+
+    75% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes character-shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-3px);
+    }
+
+    75% {
+        transform: translateX(3px);
+    }
+}
+
+/* Heart particles on click */
+.character__heart {
+    position: absolute;
+    font-size: 1.5rem;
+    pointer-events: none;
+    animation: heart-float 1s ease-out forwards;
+}
+
+@keyframes heart-float {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(1.5);
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .character,
+    .character--talking,
+    .character--happy,
+    .character--worried,
+    .character--excited {
+        animation: none;
+    }
+}
