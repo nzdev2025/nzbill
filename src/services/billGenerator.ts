@@ -43,6 +43,14 @@ export function generateMonthlyBills(
             billName = `${expense.name} (ผ่อนชำระ)`;
         }
 
+        // Determine status
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        let status: 'paid' | 'unpaid' | 'overdue' = 'unpaid';
+        if (dueDate < today) {
+            status = 'overdue';
+        }
+
         const newBill: Bill = {
             id: generateId('bill'),
             name: billName,
@@ -50,6 +58,7 @@ export function generateMonthlyBills(
             dueDate: dueDate.toISOString(),
             category: expense.category,
             isPaid: false,
+            status,
             reminderDaysBefore: 3,
             isRecurring: true,
             recurringExpenseId: expense.id,

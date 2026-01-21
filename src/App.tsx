@@ -6,16 +6,15 @@ import './styles/animations.css';
 import './App.css';
 
 // Components
-import { Character, SpeechBubble } from './components/Character';
+import { GameStage } from './components/Layout/GameStage';
 import { Header, BottomNav } from './components/Layout';
 import { AddBillModal } from './components/Bills';
-import { ConfirmDialog } from './components/Common/ConfirmDialog';
+// ConfirmDialog and Toast are now handy globally via UIContext
 import { LoadingScreen } from './components/Common/LoadingScreen';
 import {
   BillsOverlay,
   PlannerOverlay,
   SettingsOverlay,
-  HomeBubble,
   LoginOverlay,
   AnalyticsOverlay
 } from './components/Overlays';
@@ -31,6 +30,7 @@ import {
   useAuth,
   useProfile
 } from './hooks';
+import { useUI } from './contexts/UIContext';
 
 // Data
 import {
@@ -57,22 +57,10 @@ function App() {
   const [editingBill, setEditingBill] = useState<Bill | null>(null);
   const [totalCash] = useLocalStorage<number>('nzbill_total_cash', 5000);
   const [level] = useLocalStorage<number>('nzbill_level', 1);
-  const [toast, setToast] = useState<{ message: string; visible: boolean }>({ message: '', visible: false });
 
   const { user, loading } = useAuth();
   const { updateBalance } = useProfile();
-
-  const [confirmDialog, setConfirmDialog] = useState<{
-    isOpen: boolean;
-    title: string;
-    message: string;
-    onConfirm: () => void;
-  }>({
-    isOpen: false,
-    title: '',
-    message: '',
-    onConfirm: () => { },
-  });
+  const { showToast, confirm } = useUI();
 
   const [balanceDialog, setBalanceDialog] = useState<{
     isOpen: boolean;
@@ -111,7 +99,10 @@ function App() {
   // Show bill reminder when bills data is loaded
   useEffect(() => {
     if (bills.length > 0 || !loading) {
-      const reminder = getUpcomingBillReminder(bills);
+      const reminder = getUpcomingBillReminder(bills.map(b => ({
+        ...b,
+        isPaid: b.isPaid
+      })));
       dialog.showDialog(reminder);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -129,10 +120,9 @@ function App() {
   // Show error toast when billsError changes
   useEffect(() => {
     if (billsError) {
-      setToast({ message: `❌ ${billsError}`, visible: true });
-      setTimeout(() => setToast({ message: '', visible: false }), 4000);
+      showToast(`❌ ${billsError}`);
     }
-  }, [billsError]);
+  }, [billsError, showToast]);
 
   // Handle character tap
   const handleCharacterTap = useCallback(() => {
@@ -150,15 +140,13 @@ function App() {
     const successDialog = getRandomDialog(BILL_PAID_SUCCESS);
     dialog.showSingleMessage(successDialog.text, successDialog.expression);
     // Show toast
-    setToast({ message: `💰 จ่าย "${bill.name}" สำเร็จ!`, visible: true });
-    setTimeout(() => setToast({ message: '', visible: false }), 3000);
-  }, [markAsPaid, dialog]);
+    showToast(`💰 จ่าย "${bill.name}" สำเร็จ!`);
+  }, [markAsPaid, dialog, showToast]);
 
   const handleMarkUnpaid = useCallback((bill: Bill) => {
     markAsUnpaid(bill.id);
-    setToast({ message: `↩ ยกเลิกการจ่าย "${bill.name}"`, visible: true });
-    setTimeout(() => setToast({ message: '', visible: false }), 3000);
-  }, [markAsUnpaid]);
+    showToast(`↩ ยกเลิกการจ่าย "${bill.name}"`);
+  }, [markAsUnpaid, showToast]);
 
   const handleEditBill = useCallback((bill: Bill) => {
     setEditingBill(bill);
@@ -166,25 +154,35 @@ function App() {
   }, []);
 
   const handleDeleteBill = useCallback((bill: Bill) => {
-    setConfirmDialog({
-      isOpen: true,
+    confirm({
       title: '🗑️ ยืนยันการลบ',
       message: `ต้องการลบ "${bill.name}" ใช่ไหม?`,
-      onConfirm: () => {
-        deleteBill(bill.id);
-        setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
-      },
+      variant: 'danger',
+      confirmText: 'ลบ',
+      cancelText: 'ยกเลิก',
+      onConfirm: () => deleteBill(bill.id),
     });
-  }, [deleteBill]);
+  }, [deleteBill, confirm]);
 
-  const handleSaveBill = useCallback((billData: Omit<Bill, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingBill) {
-      updateBill(editingBill.id, billData);
-    } else {
-      addBill(billData);
+  const handleSaveBill = useCallback(async (billData: Omit<Bill, 'id' | 'createdAt' | 'updatedAt'>) => {
+    try {
+      if (editingBill) {
+        await updateBill(editingBill.id, billData);
+        showToast('✅ แก้ไขบิลเรียบร้อย');
+      } else {
+        const newBill = await addBill(billData);
+        if (newBill) {
+          showToast('✅ เพิ่มบิลเรียบร้อย');
+        } else {
+          showToast('❌ ไม่สามารถเพิ่มบิลได้');
+        }
+      }
+      setEditingBill(null);
+    } catch (error) {
+      console.error('Error saving bill:', error);
+      showToast('❌ เกิดข้อผิดพลาด กรุณาลองใหม่');
     }
-    setEditingBill(null);
-  }, [editingBill, addBill, updateBill]);
+  }, [editingBill, addBill, updateBill, showToast]);
 
   // Handle balance edit - using custom dialog
   const handleEditBalance = useCallback(() => {
@@ -216,39 +214,31 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* Full-screen background + character */}
-      <div
-        className="game-stage"
-        style={{ backgroundImage: `url(${bgMain})` }}
+      {/* Game Stage (Background + Character + Speech) */}
+      <GameStage
+        backgroundImage={bgMain}
+        character={{
+          expression: characterAnimation.currentExpression,
+          isBlinking: characterAnimation.isBlinking,
+          isTalking: dialog.isTyping,
+          onClick: handleCharacterTap,
+        }}
+        speechBubble={
+          currentPage === 'home' && dialog.currentText
+            ? {
+              text: dialog.currentText,
+              isTyping: dialog.isTyping,
+              onClick: () => dialog.nextLine(),
+            }
+            : undefined
+        }
       >
-        {/* Header - always on top */}
+        {/* Header - always on top of stage */}
         <Header
           level={level}
           balance={totalCash}
           onBalanceClick={handleEditBalance}
         />
-
-        {/* Character - always visible */}
-        <div className="character-layer">
-          <Character
-            expression={characterAnimation.currentExpression}
-            isBlinking={characterAnimation.isBlinking}
-            isTalking={dialog.isTyping}
-            onClick={handleCharacterTap}
-            size="large"
-          />
-        </div>
-
-        {/* Speech Bubble - floating, only show on home */}
-        {currentPage === 'home' && dialog.currentText && (
-          <div className="speech-layer">
-            <SpeechBubble
-              text={dialog.currentText}
-              isTyping={dialog.isTyping}
-              onClick={() => dialog.nextLine()}
-            />
-          </div>
-        )}
 
         {/* Overlay panel based on page */}
         {currentPage === 'bills' && (
@@ -281,15 +271,7 @@ function App() {
         {currentPage === 'analytics' && (
           <AnalyticsOverlay bills={bills} />
         )}
-
-        {/* Home quick info */}
-        {currentPage === 'home' && !dialog.currentText && (
-          <HomeBubble
-            sortedBills={bills.filter(b => !b.isPaid).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())}
-            onViewAll={() => setCurrentPage('bills')}
-          />
-        )}
-      </div>
+      </GameStage>
 
       {/* Bottom Navigation */}
       <BottomNav
@@ -318,18 +300,6 @@ function App() {
         }}
         onSave={handleSaveBill}
         editBill={editingBill}
-      />
-
-      {/* Confirm Dialog */}
-      <ConfirmDialog
-        isOpen={confirmDialog.isOpen}
-        title={confirmDialog.title}
-        message={confirmDialog.message}
-        confirmText="ลบ"
-        cancelText="ยกเลิก"
-        variant="danger"
-        onConfirm={confirmDialog.onConfirm}
-        onCancel={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
       />
 
       {/* Balance Edit Dialog */}
@@ -376,13 +346,6 @@ function App() {
               </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Toast notification */}
-      {toast.visible && (
-        <div className="toast-notification">
-          {toast.message}
         </div>
       )}
     </div>

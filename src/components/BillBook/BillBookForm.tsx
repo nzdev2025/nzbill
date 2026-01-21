@@ -37,9 +37,26 @@ export const BillBookForm: React.FC<BillBookFormProps> = ({ initialData, onSave,
             return;
         }
 
+        if (name.length > 100) {
+            setError('ชื่อรายการต้องไม่เกิน 100 ตัวอักษร');
+            return;
+        }
+
         const parsedAmount = parseFloat(amount);
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
             setError('จำนวนเงินต้องมากกว่า 0');
+            return;
+        }
+
+        if (parsedAmount > 1000000) {
+            setError('จำนวนเงินต้องไม่เกิน 1,000,000');
+            return;
+        }
+
+        // Check decimal places
+        const parts = amount.split('.');
+        if (parts.length > 1 && parts[1].length > 2) {
+            setError('ทศนิยมต้องไม่เกิน 2 ตำแหน่ง');
             return;
         }
 
@@ -79,7 +96,7 @@ export const BillBookForm: React.FC<BillBookFormProps> = ({ initialData, onSave,
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="0.00"
                     min="0"
-                    step="0.01"
+                    step="any"
                 />
             </div>
 

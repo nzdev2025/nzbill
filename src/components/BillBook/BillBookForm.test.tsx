@@ -38,4 +38,34 @@ describe('BillBookForm Component', () => {
             amount: 500,
         }));
     });
+
+    it('shows error when name is too long', async () => {
+        render(<BillBookForm onSave={mockOnSave} onCancel={mockOnCancel} />);
+
+        const longName = 'a'.repeat(101);
+        fireEvent.change(screen.getByLabelText(/ชื่อรายการ/i), { target: { value: longName } });
+        fireEvent.click(screen.getByText(/บันทึก/i));
+
+        expect(await screen.findByText(/ชื่อรายการต้องไม่เกิน 100 ตัวอักษร/i)).toBeInTheDocument();
+    });
+
+    it('shows error when amount is too high', async () => {
+        render(<BillBookForm onSave={mockOnSave} onCancel={mockOnCancel} />);
+
+        fireEvent.change(screen.getByLabelText(/ชื่อรายการ/i), { target: { value: 'Valid Name' } });
+        fireEvent.change(screen.getByLabelText(/จำนวนเงิน/i), { target: { value: '1000001' } });
+        fireEvent.click(screen.getByText(/บันทึก/i));
+
+        expect(await screen.findByText(/จำนวนเงินต้องไม่เกิน 1,000,000/i)).toBeInTheDocument();
+    });
+
+    it('shows error when amount has too many decimals', async () => {
+        render(<BillBookForm onSave={mockOnSave} onCancel={mockOnCancel} />);
+
+        fireEvent.change(screen.getByLabelText(/ชื่อรายการ/i), { target: { value: 'Valid Name' } });
+        fireEvent.change(screen.getByLabelText(/จำนวนเงิน/i), { target: { value: '100.555' } });
+        fireEvent.click(screen.getByText(/บันทึก/i));
+
+        expect(await screen.findByText(/ทศนิยมต้องไม่เกิน 2 ตำแหน่ง/i)).toBeInTheDocument();
+    });
 });

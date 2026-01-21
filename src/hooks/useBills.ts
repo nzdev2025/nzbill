@@ -49,26 +49,44 @@ export function useBills(): UseBillsReturn {
             // But our frontend uses camelCase: dueDate, reminderDaysBefore
             // We need to map them.
 
-            const mappedBills: Bill[] = (data || []).map((b) => ({
-                id: b.id,
-                name: b.name,
-                amount: b.amount,
-                dueDate: b.due_date,
-                category: b.category,
-                isPaid: b.is_paid,
-                isRecurring: b.is_recurring,
-                reminderDaysBefore: b.reminder_days_before,
-                recurringExpenseId: b.recurring_expense_id,
-                recurringDay: b.recurring_day,
-                createdAt: b.created_at,
-                updatedAt: b.updated_at,
-            }));
+            const mappedBills: Bill[] = (data || []).map((b) => {
+                const isPaid = b.is_paid;
+                const dueDate = b.due_date;
+                let status: 'paid' | 'unpaid' | 'overdue' = 'unpaid';
+
+                if (isPaid) {
+                    status = 'paid';
+                } else {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const due = new Date(dueDate);
+                    if (due < today) {
+                        status = 'overdue';
+                    }
+                }
+
+                return {
+                    id: b.id,
+                    name: b.name,
+                    amount: b.amount,
+                    dueDate: b.due_date,
+                    category: b.category,
+                    isPaid: b.is_paid,
+                    status,
+                    isRecurring: b.is_recurring,
+                    reminderDaysBefore: b.reminder_days_before,
+                    recurringExpenseId: b.recurring_expense_id,
+                    recurringDay: b.recurring_day,
+                    createdAt: b.created_at,
+                    updatedAt: b.updated_at,
+                };
+            });
 
             setBills(mappedBills);
             setError(null);
         } catch (err: unknown) {
             console.error('Error fetching bills:', err);
-            const message = err instanceof Error ? err.message : 'Unknown error';
+            const message = err instanceof Error ? err.message : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
             setError(message);
         } finally {
             setLoading(false);
@@ -133,6 +151,7 @@ export function useBills(): UseBillsReturn {
                     dueDate: data.due_date,
                     category: data.category,
                     isPaid: data.is_paid,
+                    status: data.is_paid ? 'paid' : (new Date(data.due_date) < new Date() ? 'overdue' : 'unpaid'),
                     isRecurring: data.is_recurring,
                     reminderDaysBefore: data.reminder_days_before,
                     recurringExpenseId: data.recurring_expense_id,
@@ -147,7 +166,7 @@ export function useBills(): UseBillsReturn {
                 return newBill;
             } catch (err: unknown) {
                 console.error('Error adding bill:', err);
-                const message = err instanceof Error ? err.message : 'Unknown error';
+                const message = err instanceof Error ? err.message : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
                 setError(message);
                 return null;
             }
@@ -178,7 +197,7 @@ export function useBills(): UseBillsReturn {
                 if (error) throw error;
             } catch (err: unknown) {
                 console.error('Error updating bill:', err);
-                const message = err instanceof Error ? err.message : 'Unknown error';
+                const message = err instanceof Error ? err.message : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
                 setError(message);
             }
         },
@@ -207,7 +226,7 @@ export function useBills(): UseBillsReturn {
                 // Rollback on error
                 setBills(originalBills);
                 console.error('Error deleting bill:', err);
-                const message = err instanceof Error ? err.message : 'Unknown error';
+                const message = err instanceof Error ? err.message : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
                 setError(message);
             }
         },

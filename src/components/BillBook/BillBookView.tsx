@@ -10,15 +10,19 @@ interface BillBookViewProps {
     addBill: (bill: Omit<Bill, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Bill | null>;
 }
 
+import { useUI } from '../../contexts/UIContext';
+
 export const BillBookView: React.FC<BillBookViewProps> = ({ bills, addBill }) => {
     const { expenses, addExpense, updateExpense, deleteExpense, toggleActive } = useBillBook();
     const [isAdding, setIsAdding] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const { showToast, confirm } = useUI();
 
     const handleSave = async (data: Omit<RecurringExpense, 'id' | 'createdAt' | 'updatedAt'>) => {
         if (editingId) {
             await updateExpense(editingId, data);
             setEditingId(null);
+            showToast('✅ บันทึกข้อมูลเรียบร้อย');
         } else {
             const newExpense = await addExpense(data);
             if (newExpense) {
@@ -34,21 +38,31 @@ export const BillBookView: React.FC<BillBookViewProps> = ({ bills, addBill }) =>
                     }
 
                     if (newBills.length > 0) {
-                        // Bills generated for new expense
+                        showToast(`✨ สร้างบิลรายเดือนสำหรับ "${newExpense.name}" เรียบร้อย`);
                     }
+                } else {
+                    showToast('✅ เพิ่มรายการเรียบร้อย');
                 }
 
                 setIsAdding(false);
             } else {
-                alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง');
+                showToast('❌ เกิดข้อผิดพลาดในการบันทึกข้อมูล กรุณาลองใหม่อีกครั้ง');
             }
         }
     };
 
     const handleDelete = async (id: string, name: string) => {
-        if (confirm(`ต้องการลบรายการ "${name}" ออกจากสมุดบัญชีใช่ไหม?`)) {
-            await deleteExpense(id);
-        }
+        confirm({
+            title: '🗑️ ยืนยันการลบ',
+            message: `ต้องการลบรายการ "${name}" ออกจากสมุดบัญชีใช่ไหม?`,
+            variant: 'danger',
+            confirmText: 'ลบ',
+            cancelText: 'ยกเลิก',
+            onConfirm: async () => {
+                await deleteExpense(id);
+                showToast('🗑️ ลบรายการเรียบร้อย');
+            }
+        });
     };
 
     if (isAdding || editingId) {

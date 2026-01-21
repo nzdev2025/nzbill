@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useBillBook } from './useBillBook';
-import { supabase } from '../lib/supabase';
+// import { supabase } from '../lib/supabase'; // Removed unused import
 import { useAuth } from './useAuth';
 
 // Mock dependencies
@@ -85,6 +85,9 @@ describe('useBillBook Hook', () => {
   });
 
   it('should add a new expense', async () => {
+    // Setup initial fetch mock to avoid errors
+    (mockSupabase.order as Mock).mockResolvedValue({ data: [], error: null });
+
     const newExpenseData = {
       name: 'New Expense',
       amount: 200,
@@ -106,13 +109,19 @@ describe('useBillBook Hook', () => {
       error: null,
     };
 
-    (supabase.from as Mock).mockReturnValue({
-      insert: vi.fn().mockReturnThis(),
-      select: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue(insertResult),
-    });
+    // Configure specific mock for insert -> select -> single
+    // We Mock the specific implementation for this test, but we must return the SAME mockSupabase object
+    // to preserve the chainability for the initial fetch as well.
+    // However, since we're using the same object, we just need to ensure 'single' returns what we want.
+
+    (mockSupabase.single as Mock).mockResolvedValue(insertResult);
 
     const { result } = renderHook(() => useBillBook());
+
+    // Wait for initial fetch to settle
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
 
     let added;
     await act(async () => {
@@ -120,22 +129,35 @@ describe('useBillBook Hook', () => {
     });
 
     expect(added).not.toBeNull();
+    // We can't easily check 'expenses' state without mocking the setExpenses update correctly or
+    // trusting the optimistic update logic if it exists.
+    // The hook does optimistic update: setExpenses(prev => [newExpense, ...prev]);
     expect(result.current.expenses).toContainEqual(expect.objectContaining({ name: 'New Expense' }));
   });
 
   it('should handle delete expense', async () => {
-    (supabase.from as Mock).mockReturnValue({
-      delete: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockResolvedValue({ error: null }),
-    });
+    // Setup initial fetch mock
+    (mockSupabase.order as Mock).mockResolvedValue({ data: mockExpenses, error: null });
+
+    // For delete, the chain is from -> delete -> eq
+    // We need eq to return a resolved value (or error).
+    // The hook does: await supabase.from(...).delete().eq(...)
+    // So eq should return a promise that resolves to { error: ... }
+    (mockSupabase.eq as Mock).mockResolvedValue({ error: null });
 
     const { result } = renderHook(() => useBillBook());
+
+    // Wait for initial fetch
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
 
     await act(async () => {
       await result.current.deleteExpense('1');
     });
 
-    expect(supabase.from).toHaveBeenCalledWith('recurring_expenses');
-    // Note: Local state update check depends on initial state in hook
+    expect(mockSupabase.from).toHaveBeenCalledWith('recurring_expenses');
+    expect(mockSupabase.delete).toHaveBeenCalled();
+    expect(mockSupabase.eq).toHaveBeenCalledWith('id', '1');
   });
 });

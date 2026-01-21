@@ -7,14 +7,18 @@ import { ErrorBoundary } from './components/Common/ErrorBoundary'
 import './index.css'
 import App from './App.tsx'
 
+import { UIProvider } from './contexts/UIContext'
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
       <ThemeProvider>
         <I18nProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
+          <UIProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </UIProvider>
         </I18nProvider>
       </ThemeProvider>
     </ErrorBoundary>

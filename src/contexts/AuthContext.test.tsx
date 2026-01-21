@@ -37,13 +37,18 @@ describe('AuthContext', () => {
         mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } });
     });
 
-    it('should show loading initially', () => {
+    it('should show loading initially', async () => {
         render(
             <AuthProvider>
                 <TestComponent />
             </AuthProvider>
         );
         expect(screen.getByText('Loading...')).toBeInTheDocument();
+
+        // Wait for auth to settle to avoid "act" warning from pending state update
+        await waitFor(() => {
+            expect(screen.getByText('User: Guest')).toBeInTheDocument();
+        });
     });
 
     it('should set user if session exists', async () => {

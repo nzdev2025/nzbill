@@ -26,6 +26,7 @@ export interface CharacterProps {
     size?: 'small' | 'medium' | 'large';
     onClick?: () => void;
     className?: string;
+    style?: React.CSSProperties;
 }
 
 export function Character({
@@ -35,6 +36,7 @@ export function Character({
     size = 'large',
     onClick,
     className = '',
+    style,
 }: CharacterProps) {
     // Get current sprite based on expression
     const currentSprite = useMemo(() => {
@@ -60,6 +62,7 @@ export function Character({
                     alt="น้องเมย์"
                     className="character__sprite"
                     draggable={false}
+                    style={style}
                 />
             </div>
         </div>

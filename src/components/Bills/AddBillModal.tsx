@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { Bill, BillCategory } from '../../types';
 import './AddBillModal.css';
 
+import { useUI } from '../../contexts/UIContext';
+
 // Category options
 const CATEGORIES: { value: BillCategory; label: string; icon: string }[] = [
     { value: 'electricity', label: 'ค่าไฟ', icon: '⚡' },
@@ -55,12 +57,13 @@ function AddBillModalInner({
 }: Omit<AddBillModalProps, 'isOpen'>) {
     // Initialize state from editBill - this works because component remounts when key changes
     const [formState, setFormState] = useState(() => getInitialFormState(editBill));
+    const { showToast } = useUI();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!formState.name.trim() || !formState.amount || !formState.dueDate) {
-            alert('กรุณากรอกข้อมูลให้ครบ');
+            showToast('⚠️ กรุณากรอกข้อมูลให้ครบ');
             return;
         }
 

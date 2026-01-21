@@ -37,6 +37,9 @@
 .character-layer .character {
   height: auto;
   max-height: calc(100vh - var(--header-height) - var(--bottom-nav-height) - 60px);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+  /* Premium Shadow */
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .character-layer .character__sprite {
@@ -50,7 +53,7 @@
 /* Speech Layer - Floating above character */
 .speech-layer {
   position: absolute;
-  top: calc(var(--header-height) + var(--spacing-md));
+  top: calc(var(--header-height) + var(--spacing-xs));
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - var(--spacing-lg) * 2);
@@ -61,6 +64,27 @@
 .speech-layer .speech-bubble {
   margin: 0;
   max-width: 100%;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-xl);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 /* ==========================================
@@ -74,34 +98,40 @@
   transform: translateX(-50%);
   width: calc(100% - var(--spacing-md) * 2);
   max-width: 380px;
-  max-height: calc(100vh - var(--header-height) - var(--bottom-nav-height) - 100px);
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  max-height: calc(100vh - var(--header-height) - var(--bottom-nav-height) - 90px);
+
+  /* Glassmorphism */
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
   z-index: 15;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  animation: panel-slide-in 0.3s ease-out;
+  animation: panel-pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes panel-slide-in {
+@keyframes panel-pop-in {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-20px);
+    transform: translateX(-50%) scale(0.9) translateY(20px);
   }
 
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) scale(1) translateY(0);
   }
 }
 
 /* Overlay Tabs */
 .overlay-tabs {
   display: flex;
-  background: var(--color-gray-100);
+  background: rgba(0, 0, 0, 0.05);
+  /* Slight dark overlay */
   border-radius: var(--radius-lg);
   margin: var(--spacing-md);
   padding: 4px;
@@ -125,6 +155,7 @@
   background: var(--color-white);
   color: var(--color-primary);
   box-shadow: var(--shadow-sm);
+  font-weight: var(--font-weight-bold);
 }
 
 /* Overlay Content */
@@ -141,15 +172,15 @@
 }
 
 /* ==========================================
-   Bills Summary Section
+   Bills Summary Section - Premium Card
    ========================================== */
 
 .bills-summary {
   display: flex;
   gap: var(--spacing-xs);
   padding: var(--spacing-sm) var(--spacing-md);
-  background: linear-gradient(135deg, var(--color-primary-bg) 0%, rgba(255, 255, 255, 0.8) 100%);
-  border-bottom: 1px solid var(--color-gray-200);
+  background: transparent;
+  margin-bottom: var(--spacing-xs);
 }
 
 .bills-summary__item {
@@ -158,15 +189,24 @@
   flex-direction: column;
   align-items: center;
   padding: var(--spacing-xs);
-  border-radius: var(--radius-md);
-  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
+}
+
+.bills-summary__item:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .bills-summary__label {
   font-size: var(--font-size-xs);
-  color: var(--color-gray-500);
+  color: var(--color-gray-600);
   font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .bills-summary__amount {
@@ -187,26 +227,47 @@
 }
 
 /* ==========================================
-   Bill Bubbles (Visual Novel Style)
+   Bill Bubbles (Premium Cards)
    ========================================== */
 
 .bills-scroll {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+  padding-bottom: var(--spacing-lg);
 }
 
 .bill-bubble {
-  background: var(--color-white);
-  border: 2px solid var(--color-primary-light);
-  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-xl);
   padding: var(--spacing-md);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-sm);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition-fast);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  /* Soft shadow */
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.bill-bubble::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-primary);
+  opacity: 0.8;
+}
+
+.bill-bubble:hover {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .bill-bubble:active {
@@ -220,34 +281,27 @@
 }
 
 .bill-bubble__name {
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   color: var(--color-gray-800);
+  font-size: var(--font-size-base);
 }
 
 .bill-bubble__amount {
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
+  /* Extra bold */
   color: var(--color-primary);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .bill-bubble__date {
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-500);
-}
-
-.bill-bubble__notify {
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
-  color: var(--color-white);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-family: inherit;
   font-size: var(--font-size-xs);
+  color: var(--color-gray-500);
   font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 /* Bill Bubble Actions */
@@ -258,48 +312,76 @@
 }
 
 .bill-bubble__action-btn {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   font-size: var(--font-size-sm);
+  box-shadow: var(--shadow-sm);
 }
 
-.bill-bubble__action-btn:active {
-  transform: scale(0.9);
+.bill-bubble__action-btn:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
 }
 
 .bill-bubble__action-btn--pay {
-  background: var(--color-success);
+  background: linear-gradient(135deg, var(--color-success) 0%, #219653 100%);
   color: var(--color-white);
 }
 
 .bill-bubble__action-btn--edit {
-  background: var(--color-primary-bg);
-  color: var(--color-primary);
+  background: linear-gradient(135deg, #FAD7A0 0%, #F5CBA7 100%);
+  color: #D35400;
 }
 
 .bill-bubble__action-btn--delete {
-  background: var(--color-gray-100);
+  background: linear-gradient(135deg, #F2F3F4 0%, #E5E7E9 100%);
   color: var(--color-danger);
 }
 
+/* Paid State */
+.bill-bubble--paid {
+  background: rgba(240, 240, 240, 0.6);
+  border-color: transparent;
+  opacity: 0.7;
+}
+
+.bill-bubble--paid::before {
+  background: var(--color-success);
+}
+
+.bill-bubble--paid .bill-bubble__name {
+  text-decoration: line-through;
+  color: var(--color-gray-500);
+}
+
+.bill-bubble--paid .bill-bubble__amount {
+  color: var(--color-gray-500);
+  background: none;
+  -webkit-text-fill-color: var(--color-gray-500);
+}
+
 /* ==========================================
-   Financial Bubbles
+   Financial Bubbles (Planner)
    ========================================== */
 
 .financial-card {
-  background: var(--color-white);
-  border: 2px solid var(--color-primary-light);
+  background: var(--glass-bg);
+  /* Use glass variable if inside overlay, else white */
+  background: rgba(255, 255, 255, 0.7);
+  /* Fallback */
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--radius-xl);
   padding: var(--spacing-lg);
   text-align: center;
   margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-md);
 }
 
 .financial-card__title {
@@ -309,17 +391,13 @@
   margin-bottom: var(--spacing-md);
 }
 
-.financial-card__label {
-  display: block;
-  color: var(--color-gray-500);
-  font-size: var(--font-size-sm);
-  margin-bottom: var(--spacing-xs);
-}
-
 .financial-card__value {
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
+  font-size: var(--font-size-4xl);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(230, 126, 34, 0.2));
 }
 
 .financial-bubbles {
@@ -329,22 +407,16 @@
 
 .financial-bubble {
   flex: 1;
-  background: var(--color-white);
-  border: 2px solid var(--color-primary-light);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--radius-lg);
   padding: var(--spacing-md);
   text-align: center;
 }
 
 .financial-bubble--danger {
-  border-color: var(--color-danger);
-}
-
-.financial-bubble__label {
-  display: block;
-  font-size: var(--font-size-xs);
-  color: var(--color-gray-500);
-  margin-bottom: var(--spacing-xs);
+  border-color: rgba(231, 76, 60, 0.3);
+  background: rgba(231, 76, 60, 0.05);
 }
 
 .financial-bubble__value {
@@ -353,128 +425,75 @@
   color: var(--color-primary);
 }
 
-.financial-bubble--danger .financial-bubble__value {
-  color: var(--color-danger);
-}
-
-/* ==========================================
-   Settings Panel
-   ========================================== */
-
-.overlay-panel--settings {
-  max-height: 60vh;
-}
-
-.settings-header {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--color-gray-200);
-}
-
-.settings-icon {
-  font-size: 1.25rem;
-}
-
-.settings-title {
-  font-weight: var(--font-weight-bold);
-  color: var(--color-gray-800);
-}
-
-.settings-list {
-  padding: var(--spacing-sm);
-}
-
-.settings-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-md) var(--spacing-sm);
-  border-bottom: 1px solid var(--color-gray-100);
-}
-
-.settings-row:last-child {
-  border-bottom: none;
-}
-
-.settings-row span {
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-700);
-}
-
-.settings-btn {
-  background: var(--color-primary-bg);
-  color: var(--color-primary);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  font-family: inherit;
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-}
-
 /* ==========================================
    Home Bubble (Quick Info)
    ========================================== */
 
-/* Home Bubble */
 .home-bubble {
   position: absolute;
-  bottom: calc(80px + var(--spacing-lg));
+  bottom: calc(var(--bottom-nav-height) + var(--spacing-sm));
   left: var(--spacing-md);
   right: var(--spacing-md);
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+
+  /* Glassmorphism */
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+
   border-radius: var(--radius-xl);
-  padding: var(--spacing-md);
-  box-shadow: var(--shadow-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
   z-index: 10;
+  animation: float 5s ease-in-out infinite alternate;
 }
 
 .home-bubble h3 {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
   color: var(--color-primary);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
-.home-bubble__btn {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+/* ==========================================
+   Toast Notification - Premium
+   ========================================== */
+
+.toast-notification {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + var(--spacing-lg));
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: rgba(30, 30, 30, 0.9);
+  backdrop-filter: blur(8px);
   color: var(--color-white);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: var(--spacing-xs) var(--spacing-md);
-  font-family: inherit;
+
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  margin-bottom: var(--spacing-sm);
+  z-index: 100;
+
+  animation: toast-pop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.home-bubble__count,
-.home-bubble__empty {
-  font-size: var(--font-size-sm);
-  color: var(--color-gray-600);
-  margin: 0;
-}
+@keyframes toast-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8) translateY(20px);
+  }
 
-/* Header adjustments for overlay */
-.game-stage .app-header {
-  position: relative;
-  z-index: 25;
-  background: transparent;
-}
-
-/* Bottom Nav adjustments */
-.bottom-nav {
-  z-index: 30;
-}
-
-/* FAB adjustments */
-.btn-fab {
-  z-index: 25;
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
 }
 
 /* ==========================================
@@ -491,67 +510,188 @@
   margin-left: 6px;
   background: var(--color-primary);
   color: var(--color-white);
-  font-size: var(--font-size-xs);
+  font-size: 10px;
   font-weight: var(--font-weight-bold);
   border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(230, 126, 34, 0.3);
 }
 
 .tab-badge--success {
   background: var(--color-success);
+  box-shadow: 0 2px 5px rgba(39, 174, 96, 0.3);
+}
+
+/* Header Adjustments */
+.game-stage .app-header {
+  position: relative;
+  z-index: 25;
+  background: transparent;
 }
 
 /* ==========================================
-   Bill Bubble Paid State
+   Settings Panel (Restored & Premium)
    ========================================== */
 
-.bill-bubble--paid {
-  background: var(--color-gray-50);
-  border-color: var(--color-gray-300);
-  opacity: 0.8;
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  /* Subtle divider */
+  background: rgba(255, 255, 255, 0.3);
+  /* Slight tint header */
 }
 
-.bill-bubble--paid .bill-bubble__name {
-  text-decoration: line-through;
-  color: var(--color-gray-500);
+.settings-icon {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
-.bill-bubble--paid .bill-bubble__amount {
-  color: var(--color-gray-500);
+.settings-title {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gray-800);
+  font-size: var(--font-size-lg);
 }
 
-.bill-bubble__action-btn--undo {
-  background: var(--color-gray-200);
-  color: var(--color-gray-600);
+.settings-list {
+  padding: 0;
 }
 
-/* ==========================================
-   Toast Notification
-   ========================================== */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  transition: background 0.2s;
+}
 
-.toast-notification {
-  position: fixed;
-  bottom: calc(var(--bottom-nav-height) + var(--spacing-lg));
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  color: var(--color-white);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border-radius: var(--radius-xl);
-  font-size: var(--font-size-sm);
+.settings-row:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-row span {
+  font-size: var(--font-size-base);
+  color: var(--color-gray-700);
   font-weight: var(--font-weight-medium);
-  z-index: 100;
-  animation: toast-in 0.3s ease-out;
-  box-shadow: var(--shadow-lg);
 }
 
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20px);
-  }
+/* Premium Buttons in Settings */
+.settings-btn {
+  background: linear-gradient(135deg, var(--color-primary-bg) 0%, #fff 100%);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary-light);
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+.settings-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, #fff 0%, var(--color-primary-bg) 100%);
+}
+
+.settings-btn:active {
+  transform: scale(0.95);
+}
+
+.settings-btn--danger {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: var(--color-danger);
+  border-color: #fca5a5;
+  width: 100%;
+  justify-content: center;
+  margin-top: var(--spacing-sm);
+}
+
+.settings-btn--danger:hover {
+  background: linear-gradient(135deg, #fecaca 0%, #fee2e2 100%);
+}
+
+/* ==========================================
+   Modern Toggle Switch
+   ========================================== */
+
+.toggle {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  background: var(--color-gray-300);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background 0.3s ease;
+  border: none;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle.active {
+  background: var(--color-primary);
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  background: var(--color-white);
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Bouncy spring */
+}
+
+.toggle.active::after {
+  transform: translateX(22px);
+}
+
+/* ==========================================
+   Form Elements (Inputs) - Glass Style
+   ========================================== */
+
+.input-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.input-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-gray-700);
+  margin-bottom: var(--spacing-xs);
+  margin-left: 4px;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  transition: all 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.15);
 }

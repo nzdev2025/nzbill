@@ -1,11 +1,22 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BillBookView } from './BillBookView';
 import { useBillBook } from '../../hooks/useBillBook';
 
 // Mock the hook
 vi.mock('../../hooks/useBillBook', () => ({
     useBillBook: vi.fn(),
+}));
+
+// Mock useUI
+const mockShowToast = vi.fn();
+const mockConfirm = vi.fn();
+
+vi.mock('../../contexts/UIContext', () => ({
+    useUI: () => ({
+        showToast: mockShowToast,
+        confirm: mockConfirm,
+    }),
 }));
 
 describe('BillBookView Component', () => {
@@ -69,15 +80,20 @@ describe('BillBookView Component', () => {
         expect(screen.getByText('เพิ่มรายการใหม่')).toBeInTheDocument(); // Form header
     });
 
-    it('calls deleteExpense when clicking delete icon', async () => {
-        // Mock window.confirm
-        vi.stubGlobal('confirm', vi.fn(() => true));
+    it('calls deleteExpense when confirmed via UI context', async () => {
+        // Implement confirm logic
+        mockConfirm.mockImplementation(({ onConfirm }) => onConfirm());
 
         render(<BillBookView bills={mockBills} addBill={mockAddBill} />);
 
         const deleteButton = screen.getByTitle('ลบ');
         fireEvent.click(deleteButton);
 
+        expect(mockConfirm).toHaveBeenCalled();
         expect(mockDeleteExpense).toHaveBeenCalledWith('1');
+
+        await waitFor(() => {
+            expect(mockShowToast).toHaveBeenCalledWith(expect.stringContaining('ลบรายการเรียบร้อย'));
+        });
     });
 });

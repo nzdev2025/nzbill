@@ -1,137 +1,110 @@
-// ==========================================
-// NzBill Type Definitions
-// ==========================================
+export type AppPage = 'home' | 'bills' | 'planner' | 'settings' | 'analytics' | 'bill-book';
 
-// Character Types
-// Note: Available sprites: idle, happy, worried, thinking
-// Other expressions use fallbacks defined in Character.tsx
-export type CharacterExpression =
-  | 'idle'
-  | 'happy'
-  | 'worried'
-  | 'angry'     // Falls back to 'worried'
-  | 'excited'   // Falls back to 'happy'
-  | 'surprised' // Falls back to 'happy'
-  | 'thinking';
+export type BillStatus = 'unpaid' | 'paid' | 'overdue';
+export type BillCategory = 'utility' | 'subscription' | 'credit_card' | 'loan' | 'other';
+export type RecurringType = 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
+export type NotificationType = 'none' | 'on_due_date' | '1_day_before' | '3_days_before' | '1_week_before';
 
-export type CharacterOutfit =
-  | 'default'
-  | 'casual'
-  | 'formal'
-  | 'pajama';
+export type CharacterExpression = 'idle' | 'happy' | 'worried' | 'angry' | 'thinking' | 'excited' | 'surprised';
 
-export interface CharacterState {
-  expression: CharacterExpression;
-  outfit: CharacterOutfit;
-  isBlinking: boolean;
-  isTalking: boolean;
-}
-
-export interface CharacterConfig {
-  id: string;
+// Bill Book Interface (Template for bills)
+export interface BillBookItem {
+  id: string; // UUID
   name: string;
-  sprites: Record<CharacterExpression, string>;
-  outfits: Record<CharacterOutfit, Record<CharacterExpression, string>>;
+  amount: number | null; // null means "ask every time"
+  category: BillCategory;
+  icon?: string;
+  default_due_day?: number; // 1-31
+  is_active: boolean;
+  created_at?: string;
 }
 
-// Bill Types
-export type BillCategory =
-  | 'electricity'
-  | 'water'
-  | 'internet'
-  | 'credit_card'
-  | 'phone'
-  | 'rent'
-  | 'insurance'
-  | 'subscription'
-  | 'loan'
-  | 'other';
+export interface Bill {
+  id: string; // UUID
+  name: string;
+  amount: number;
+  dueDate: string; // ISO Date string
+  status: BillStatus;
+  isPaid: boolean;
+  category: BillCategory;
+  recurring: RecurringType;
+  notification: NotificationType;
+  paidDate?: string; // ISO Date string
+  userId?: string;
+
+  // New fields for Bill Book integration
+  bill_book_id?: string; // Link to source template
+  note?: string;
+
+  // Legacy fields (optional support)
+  icon?: string;
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Missing fields from revert
+  isRecurring?: boolean;
+  reminderDaysBefore?: number;
+  recurringExpenseId?: string;
+  recurringDay?: number;
+}
 
 export interface RecurringExpense {
   id: string;
   name: string;
   amount: number;
-  dueDay: number; // 1-31
   category: BillCategory;
+  dueDay: number;
   active: boolean;
-  isInstallment: boolean;
-  totalTerms?: number;
-  currentTerm?: number;
-  createdAt: string;
-  updatedAt: string;
+  isInstallment?: boolean;
+  totalInstallments?: number;
+  paidInstallments?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface Bill {
+export interface UserProfile {
   id: string;
-  name: string;
-  amount: number;
-  dueDate: string; // ISO date string
-  category: BillCategory;
-  isPaid: boolean;
-  reminderDaysBefore: number;
-  isRecurring: boolean;
-  recurringExpenseId?: string; // Link back to master template
-  recurringDay?: number; // Day of month (1-31)
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-// Financial Types
-export interface Account {
-  id: string;
-  name: string;
-  balance: number;
-  type: 'cash' | 'bank' | 'savings' | 'credit';
-  icon?: string;
+  email: string;
+  displayName?: string;
+  level: number;
+  exp: number;
+  total_cash: number;
+  onboarding_completed: boolean;
+  settings: AppSettings;
 }
 
-export interface FinancialSummary {
-  totalCash: number;
-  totalDebt: number;
-  dailyBudget: number;
-  daysUntilPayday: number;
-  upcomingBills: Bill[];
-}
-
-export interface SpendingAdvice {
-  message: string;
-  type: 'warning' | 'success' | 'info' | 'danger';
-  expression: CharacterExpression;
-}
-
-// Settings Types
 export interface AppSettings {
+  theme: 'light' | 'dark' | 'system';
+  currency: 'THB' | 'USD';
+  language: 'th' | 'en';
   soundEnabled: boolean;
   notificationsEnabled: boolean;
-  language: 'th' | 'en';
-  characterId: string;
-  characterOutfit: CharacterOutfit;
-  reminderTime: string; // HH:mm format
-  theme: 'light' | 'dark' | 'auto';
+  biometricEnabled: boolean;
+  lowDataMode: boolean; // New: for slower connections
 }
 
-// Dialog Types
-export interface DialogLine {
+export interface CharacterState {
+  expression: CharacterExpression;
+  isBlinking: boolean;
+  isTalking: boolean;
+  outfitId: string; // For future customization
+}
+
+// Dialog System Types
+export interface DialogMessage {
   id: string;
   text: string;
   expression: CharacterExpression;
-  soundEffect?: string;
+  duration?: number; // ms
+  isQuestion?: boolean;
+  options?: DialogOption[];
 }
 
-export interface DialogSequence {
+export interface DialogOption {
   id: string;
-  trigger: string;
-  lines: DialogLine[];
+  text: string;
+  action: () => void;
+  nextDialogId?: string;
 }
 
-// Navigation Types
-export type AppPage = 'home' | 'bills' | 'planner' | 'settings' | 'bill-book' | 'analytics';
-
-// User Level/Experience (Gamification)
-export interface UserProgress {
-  level: number;
-  experience: number;
-  experienceToNextLevel: number;
-  achievements: string[];
-  streakDays: number;
-}
+export type DialogSequence = DialogMessage[];

@@ -52,7 +52,7 @@ export function useBillBook(): UseBillBookReturn {
             setError(null);
         } catch (err: unknown) {
             console.error('Error fetching recurring expenses:', err);
-            const message = err instanceof Error ? err.message : 'Unknown error';
+            const message = err instanceof Error ? err.message : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
             setError(message);
         } finally {
             setLoading(false);
@@ -99,7 +99,7 @@ export function useBillBook(): UseBillBookReturn {
                 return newExpense;
             } catch (err: unknown) {
                 console.error('Error adding recurring expense:', err);
-                const message = err instanceof Error ? err.message : 'Unknown error';
+                const message = err instanceof Error ? err.message : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
                 setError(message);
                 return null;
             }
@@ -111,15 +111,14 @@ export function useBillBook(): UseBillBookReturn {
         async (id: string, updates: Partial<Omit<RecurringExpense, 'id' | 'createdAt'>>) => {
             if (!user) return;
             try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const dbUpdates: any = {};
+                const dbUpdates: Record<string, unknown> = {};
                 if (updates.name !== undefined) dbUpdates.name = updates.name;
                 if (updates.amount !== undefined) dbUpdates.amount = updates.amount;
                 if (updates.dueDay !== undefined) dbUpdates.due_day = updates.dueDay;
                 if (updates.category !== undefined) dbUpdates.category = updates.category;
                 if (updates.active !== undefined) dbUpdates.active = updates.active;
                 if (updates.isInstallment !== undefined) dbUpdates.is_installment = updates.isInstallment;
-                
+
                 dbUpdates.updated_at = new Date().toISOString();
 
                 const { error } = await supabase
@@ -132,7 +131,7 @@ export function useBillBook(): UseBillBookReturn {
                 setExpenses(prev => prev.map(e => e.id === id ? { ...e, ...updates } : e));
             } catch (err: unknown) {
                 console.error('Error updating recurring expense:', err);
-                const message = err instanceof Error ? err.message : 'Unknown error';
+                const message = err instanceof Error ? err.message : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
                 setError(message);
             }
         },
@@ -153,7 +152,7 @@ export function useBillBook(): UseBillBookReturn {
                 setExpenses(prev => prev.filter(e => e.id !== id));
             } catch (err: unknown) {
                 console.error('Error deleting recurring expense:', err);
-                const message = err instanceof Error ? err.message : 'Unknown error';
+                const message = err instanceof Error ? err.message : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ';
                 setError(message);
             }
         },
