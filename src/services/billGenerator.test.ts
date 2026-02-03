@@ -8,7 +8,7 @@ describe('billGenerator Service', () => {
         name: 'ค่าเน็ต',
         amount: 500,
         dueDay: 5,
-        category: 'internet',
+        category: 'utility',
         active: true,
         isInstallment: false,
         createdAt: '',
@@ -23,8 +23,8 @@ describe('billGenerator Service', () => {
         category: 'loan',
         active: true,
         isInstallment: true,
-        totalTerms: 10,
-        currentTerm: 2,
+        totalInstallments: 10,
+        paidInstallments: 2,
         createdAt: '',
         updatedAt: ''
     };
@@ -48,8 +48,11 @@ describe('billGenerator Service', () => {
             name: 'ค่าเน็ต',
             amount: 500,
             dueDate: new Date(2025, 0, 5).toISOString(),
-            category: 'internet',
+            category: 'utility',
+            status: 'unpaid',
             isPaid: false,
+            recurring: 'monthly',
+            notification: 'none',
             reminderDaysBefore: 3,
             isRecurring: true,
             recurringExpenseId: 'rec_1',
@@ -68,7 +71,7 @@ describe('billGenerator Service', () => {
 
         expect(result.newBills).toHaveLength(1);
         expect(result.newBills[0].name).toBe('ผ่อนคอม (ผ่อนชำระ)');
-        
+
         // No updates expected since we removed counting logic
         expect(result.updatedExpenses).toHaveLength(0);
     });
@@ -76,9 +79,9 @@ describe('billGenerator Service', () => {
     it('should NOT deactivate installment automatically', () => {
         const lastTermInstallment: RecurringExpense = {
             ...mockInstallment,
-            currentTerm: 9
+            paidInstallments: 9
         };
-        
+
         const targetDate = new Date(2025, 0, 15);
         const result = generateMonthlyBills([lastTermInstallment], [], targetDate);
 
@@ -92,9 +95,9 @@ describe('billGenerator Service', () => {
             dueDay: 31
         };
         const targetDate = new Date(2024, 1, 15); // Feb 2024 (Leap year)
-        
+
         const result = generateMonthlyBills([endOfMonthExpense], [], targetDate);
-        
+
         const dueDate = new Date(result.newBills[0].dueDate);
         expect(dueDate.getDate()).toBe(29); // Feb 29
         expect(dueDate.getMonth()).toBe(1);

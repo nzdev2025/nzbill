@@ -1,7 +1,18 @@
 export type AppPage = 'home' | 'bills' | 'planner' | 'settings' | 'analytics' | 'bill-book';
 
 export type BillStatus = 'unpaid' | 'paid' | 'overdue';
-export type BillCategory = 'utility' | 'subscription' | 'credit_card' | 'loan' | 'other';
+export type BillCategory =
+  | 'utility'
+  | 'subscription'
+  | 'credit_card'
+  | 'loan'
+  | 'other'
+  | 'electricity'
+  | 'internet'
+  | 'water'
+  | 'phone'
+  | 'rent'
+  | 'insurance';
 export type RecurringType = 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
 export type NotificationType = 'none' | 'on_due_date' | '1_day_before' | '3_days_before' | '1_week_before';
 
@@ -80,7 +91,11 @@ export interface AppSettings {
   soundEnabled: boolean;
   notificationsEnabled: boolean;
   biometricEnabled: boolean;
-  lowDataMode: boolean; // New: for slower connections
+  lowDataMode: boolean;
+  // Character & Reminder settings
+  characterId?: string;
+  characterOutfit?: string;
+  reminderTime?: string;
 }
 
 export interface CharacterState {
@@ -108,3 +123,6 @@ export interface DialogOption {
 }
 
 export type DialogSequence = DialogMessage[];
+
+// Alias for backward compatibility
+export type DialogLine = DialogMessage;

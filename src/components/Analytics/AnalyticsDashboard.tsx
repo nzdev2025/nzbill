@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useBills } from '../../hooks/useBills';
 import { useAnalytics } from '../../hooks/useAnalytics';
 import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
@@ -9,7 +9,7 @@ import { SpendingTrendChart } from './SpendingTrendChart';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
-export const AnalyticsDashboard: React.FC = () => {
+export const AnalyticsDashboard = () => {
     const { bills } = useBills();
     const { getMonthlyStats, getCategoryBreakdown, getSixMonthTrend } = useAnalytics(bills);
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -72,7 +72,7 @@ export const AnalyticsDashboard: React.FC = () => {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: number) => [`${value.toLocaleString()} ฿`, 'ยอดเงิน']} />
+                                <Tooltip formatter={(value) => [`${Number(value).toLocaleString()} ฿`, 'ยอดเงิน']} />
                                 <Legend />
                             </PieChart>
                         </div>

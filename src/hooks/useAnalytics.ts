@@ -10,6 +10,7 @@ export interface MonthlyStats {
 export interface CategoryData {
     name: string;
     value: number;
+    [key: string]: string | number;
 }
 
 export const useAnalytics = (bills: Bill[]) => {

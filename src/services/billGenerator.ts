@@ -59,6 +59,8 @@ export function generateMonthlyBills(
             category: expense.category,
             isPaid: false,
             status,
+            recurring: 'monthly',
+            notification: 'none',
             reminderDaysBefore: 3,
             isRecurring: true,
             recurringExpenseId: expense.id,

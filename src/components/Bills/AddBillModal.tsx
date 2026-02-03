@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { FormEvent } from 'react';
 import type { Bill, BillCategory } from '../../types';
 import './AddBillModal.css';
 
@@ -59,7 +60,7 @@ function AddBillModalInner({
     const [formState, setFormState] = useState(() => getInitialFormState(editBill));
     const { showToast } = useUI();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
 
         if (!formState.name.trim() || !formState.amount || !formState.dueDate) {
@@ -72,7 +73,10 @@ function AddBillModalInner({
             amount: parseFloat(formState.amount),
             dueDate: new Date(formState.dueDate).toISOString(),
             category: formState.category,
+            status: editBill?.status || 'unpaid',
             isPaid: editBill?.isPaid || false,
+            recurring: 'monthly',
+            notification: 'none',
             isRecurring: formState.isRecurring,
             reminderDaysBefore: parseInt(formState.reminderDays) || 3,
         });

@@ -6,5 +6,4 @@ export * from './useBillBook';
 export * from './useBillGenerator';
 export * from './useAuth';
 export * from './useProfile';
-export * from './useAuth';
-export * from './useProfile';
+export * from './useCharacterSystem';

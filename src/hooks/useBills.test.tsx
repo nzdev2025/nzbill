@@ -59,7 +59,10 @@ describe('useBills Hook', () => {
         amount: 1000,
         dueDate: new Date().toISOString(),
         category: 'electricity' as const,
+        status: 'unpaid' as const,
         isPaid: false,
+        recurring: 'monthly' as const,
+        notification: 'none' as const,
         reminderDaysBefore: 3,
         isRecurring: false,
     };

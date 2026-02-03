@@ -1,4 +1,3 @@
-import React from 'react';
 import { useProfile, useAuth } from '../../hooks';
 import { useTheme } from '../../contexts/ThemeContext';
 import type { AppSettings } from '../../types';
@@ -8,7 +7,7 @@ interface SettingsOverlayProps {
     onEditBalance: () => void;
 }
 
-export const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ onEditBalance }) => {
+export const SettingsOverlay = ({ onEditBalance }: SettingsOverlayProps) => {
     const { profile, updateSettings } = useProfile();
     const { signOut } = useAuth();
     const { theme, setTheme } = useTheme();

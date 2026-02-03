@@ -9,6 +9,7 @@ interface GameStageProps {
         isBlinking: boolean;
         isTalking: boolean;
         onClick: () => void;
+        customImageSrc?: string;
     };
     speechBubble?: {
         text: string;
@@ -44,6 +45,7 @@ export const GameStage: React.FC<GameStageProps> = ({
                     isTalking={character.isTalking}
                     onClick={character.onClick}
                     size="large"
+                    customImageSrc={character.customImageSrc}
                 />
             </div>
 

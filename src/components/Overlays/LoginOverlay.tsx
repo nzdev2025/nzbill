@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
+import type { FormEvent } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import './LoginOverlay.css';
 
-export const LoginOverlay: React.FC = () => {
+export const LoginOverlay = () => {
     const { signInWithGoogle, signInWithEmail, signInWithPassword, signUp, error: authError } = useAuth();
     const [mode, setMode] = useState<'login' | 'register' | 'magic'>('login');
     const [email, setEmail] = useState('');
@@ -17,7 +18,7 @@ export const LoginOverlay: React.FC = () => {
     };
 
     // Initial check for auth error
-    React.useEffect(() => {
+    useEffect(() => {
         if (authError) {
             setMessage({ type: 'error', text: authError });
         }
@@ -35,7 +36,7 @@ export const LoginOverlay: React.FC = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setMessage(null);
         setLoading(true);

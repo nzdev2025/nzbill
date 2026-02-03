@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { Bill } from '../../types';
 import { formatDateThai } from '../../utils/date';
 

@@ -2,11 +2,12 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useBills } from './useBills';
 import { useBillBook } from './useBillBook';
 import { generateMonthlyBills } from '../services/billGenerator';
+import { getPaidBillsFromPreviousMonths } from '../services/cleanupPaidBills';
 import type { Bill, RecurringExpense } from '../types';
 
 export function useBillGenerator() {
     const { expenses, updateExpense, loading: expensesLoading } = useBillBook();
-    const { bills, addBill, loading: billsLoading } = useBills();
+    const { bills, addBill, deleteBill, loading: billsLoading } = useBills();
 
     // Track generated keys to prevent duplicates
     // Key format: recurringExpenseId_Month_Year
@@ -22,11 +23,18 @@ export function useBillGenerator() {
     const addBillRef = useRef(addBill);
     addBillRef.current = addBill;
 
+    const deleteBillRef = useRef(deleteBill);
+    deleteBillRef.current = deleteBill;
+
     const updateExpenseRef = useRef(updateExpense);
     updateExpenseRef.current = updateExpense;
 
     const stableAddBill = useCallback(async (billData: Omit<Bill, 'id' | 'createdAt' | 'updatedAt'>) => {
         return addBillRef.current(billData);
+    }, []);
+
+    const stableDeleteBill = useCallback(async (id: string) => {
+        return deleteBillRef.current(id);
     }, []);
 
     const stableUpdateExpense = useCallback(async (id: string, updates: Partial<RecurringExpense>) => {
@@ -57,6 +65,12 @@ export function useBillGenerator() {
                 const now = new Date();
                 const currentMonth = now.getMonth();
                 const currentYear = now.getFullYear();
+
+                // 🧹 Step 1: Cleanup paid bills from previous months
+                const billsToCleanup = getPaidBillsFromPreviousMonths(bills);
+                for (const bill of billsToCleanup) {
+                    await stableDeleteBill(bill.id);
+                }
 
                 // Pre-populate processedGenerations with existing bills from DB
                 bills.forEach(bill => {
@@ -118,5 +132,5 @@ export function useBillGenerator() {
         };
 
         runGeneration();
-    }, [bills, expenses, billsLoading, expensesLoading, stableAddBill, stableUpdateExpense]);
+    }, [bills, expenses, billsLoading, expensesLoading, stableAddBill, stableDeleteBill, stableUpdateExpense]);
 }

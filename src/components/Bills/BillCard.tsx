@@ -13,6 +13,7 @@ const CATEGORY_ICONS: Record<BillCategory, string> = {
     insurance: '🛡️',
     subscription: '📺',
     loan: '🏦',
+    utility: '🔧',
     other: '📋',
 };
 
@@ -27,6 +28,7 @@ const CATEGORY_LABELS: Record<BillCategory, string> = {
     insurance: 'ประกัน',
     subscription: 'สมาชิก',
     loan: 'สินเชื่อ',
+    utility: 'สาธารณูปโภค',
     other: 'อื่นๆ',
 };
 

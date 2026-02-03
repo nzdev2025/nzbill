@@ -10,13 +10,16 @@ export interface UserProfile {
 }
 
 const DEFAULT_SETTINGS: AppSettings = {
+    theme: 'light',
+    currency: 'THB',
+    language: 'th',
     soundEnabled: true,
     notificationsEnabled: true,
-    language: 'th',
+    biometricEnabled: false,
+    lowDataMode: false,
     characterId: 'may',
     characterOutfit: 'default',
     reminderTime: '09:00',
-    theme: 'light',
 };
 
 export function useProfile() {

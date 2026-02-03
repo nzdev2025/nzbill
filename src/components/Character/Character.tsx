@@ -37,11 +37,13 @@ export function Character({
     onClick,
     className = '',
     style,
-}: CharacterProps) {
+    customImageSrc,
+}: CharacterProps & { customImageSrc?: string }) {
     // Get current sprite based on expression
     const currentSprite = useMemo(() => {
+        if (customImageSrc) return customImageSrc;
         return SPRITES[expression] || SPRITES.idle;
-    }, [expression]);
+    }, [expression, customImageSrc]);
 
     // Generate class names
     const classNames = [

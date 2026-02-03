@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 interface TrendData {
@@ -10,7 +9,7 @@ interface SpendingTrendChartProps {
     data: TrendData[];
 }
 
-export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({ data }) => {
+export const SpendingTrendChart = ({ data }: SpendingTrendChartProps) => {
     return (
         <div style={{ width: '100%', height: 250 }} className="flex justify-center items-center">
             <BarChart
@@ -28,7 +27,7 @@ export const SpendingTrendChart: React.FC<SpendingTrendChartProps> = ({ data }) 
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                 <YAxis hide />
                 <Tooltip
-                    formatter={(value: number) => `${value.toLocaleString()} ฿`}
+                    formatter={(value) => `${Number(value).toLocaleString()} ฿`}
                     cursor={{ fill: 'transparent' }}
                 />
                 <Legend />

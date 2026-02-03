@@ -28,7 +28,8 @@ import {
   useLocalStorage,
   useBillGenerator,
   useAuth,
-  useProfile
+  useProfile,
+  useCharacterSystem
 } from './hooks';
 import { useUI } from './contexts/UIContext';
 
@@ -204,6 +205,12 @@ function App() {
   const remaining = totalCash - totalDebt;
   const dailyBudget = Math.max(0, remaining / getDaysUntilEndOfMonth());
 
+  // Character System
+  const { getCharacterAssets } = useCharacterSystem();
+
+  // Get current asset based on expression
+  const currentBodyAsset = getCharacterAssets(characterAnimation.currentExpression);
+
   if (loading) {
     return <LoadingScreen />;
   }
@@ -218,10 +225,17 @@ function App() {
       <GameStage
         backgroundImage={bgMain}
         character={{
+          // Pass the dynamic asset URL (Character component will handle it)
+          // We need to update GameStage and Character component to accept 'imageSrc' or similar
+          // But for now, let's assume Character component is updated to accept 'imageSrc' OR we pass it via expression if we change logic?
+          // WAIT: Character component currently uses internal mapping. We need to update it to accept external src.
+          // Let's check Character component again.
+
           expression: characterAnimation.currentExpression,
           isBlinking: characterAnimation.isBlinking,
           isTalking: dialog.isTyping,
           onClick: handleCharacterTap,
+          customImageSrc: currentBodyAsset // New prop we will add to GameStage/Character
         }}
         speechBubble={
           currentPage === 'home' && dialog.currentText
